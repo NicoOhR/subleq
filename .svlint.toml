@@ -1,0 +1,55 @@
+# .svlint.toml — conservative defaults, compatible with svlint <=0.6 / svls
+# Uses [rules] (not [syntaxrules]/[textrules]) for broad version compatibility.
+# Reference: https://github.com/dalance/svlint/blob/master/MANUAL.md
+#
+# If you are on a newer svlint (>=0.7), run `svlint --update` to migrate
+# this file to the split [syntaxrules]/[textrules] format automatically.
+
+[option]
+exclude_paths = ["build.*", "sim.*", "vendor.*"]
+
+[rules]
+# Clocking discipline
+blocking_assignment_in_always_ff    = true
+non_blocking_assignment_in_always_comb = true
+
+# Prefer always_comb/ff/latch over legacy `always`
+legacy_always                       = true
+level_sensitive_always              = true
+
+# Case statements must have a default branch
+case_default                        = true
+
+# Enums must carry an explicit type, e.g. `typedef enum logic [1:0]`
+enum_with_type                      = true
+
+# Require begin/end for if/for bodies — prevents dangling-else bugs
+if_with_begin                       = true
+for_with_begin                      = true
+
+# Label all generate blocks
+generate_for_with_label             = true
+generate_if_with_label              = true
+
+# genvar declared inside the loop (cleaner scoping)
+genvar_declaration_in_loop          = true
+genvar_declaration_out_loop         = false
+
+# Loop index declared in the for-statement itself
+loop_variable_declaration           = true
+
+# Require ANSI-style port declarations (modern SV, not Verilog-95)
+non_ansi_module                     = true
+
+# Disallow function names that shadow system tasks ($display etc.)
+function_same_as_system_function    = true
+
+# Ban tab characters — use spaces
+tab_character                       = true
+
+# Avoid `or` as event separator — use `,`
+eventlist_or                        = true
+
+# `default_nettype none` is great practice but can break IP/testbenches.
+# Flip to true once you control all sources.
+default_nettype_none                = false
