@@ -3,10 +3,10 @@
 module tb_alu;
   logic clk;
   logic signed [7:0] a, b, r;
-  logic s;
+  logic [1:0] s;
 
   alu dut (
-    a, b, clk, r, s
+    a, b, r, s
   );
   initial begin
     clk = 0;
@@ -22,7 +22,10 @@ module tb_alu;
     a = 5; b = 4;
     @(posedge clk); #1; 
     
-    a = 1; b = 3;
+    a = -2; b = 3;
+    @(posedge clk); #1; 
+    
+    a = -120; b = 120;
     @(posedge clk); #1; 
 
     $finish;
