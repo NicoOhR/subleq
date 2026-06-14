@@ -1,26 +1,16 @@
-module mem #(
-    localparam WIDTH=16,     
-    localparam DEPTH=16384, 
-    localparam ADDRW=$clog2(DEPTH)
-    ) (
-    input wire logic clk,
-    input wire logic [3:0] we,
-    input wire logic [ADDRW-1:0] addr,
-    input wire logic [WIDTH-1:0] data_in,
-    output     logic [WIDTH-1:0] data_out
-    );
+module mem(input clk,mem_bus bus);
 
     SB_SPRAM256KA spram_inst (
-        .ADDRESS(addr),
-        .DATAIN(data_in),
-        .MASKWREN(we),
-        .WREN(|we),
+        .ADDRESS(bus.addr),
+        .DATAIN(bus.data_in),
+        .MASKWREN(bus.we),
+        .WREN(|bus.we),
         .CHIPSELECT(1'b1),
         .CLOCK(clk),
         .STANDBY(1'b0),
         .SLEEP(1'b0),
         .POWEROFF(1'b1),
-        .DATAOUT(data_out)
+        .DATAOUT(bus.data_out)
     );
 endmodule
 
