@@ -1,7 +1,7 @@
 interface mem_bus
   #(
-    localparam int WIDTH=16,
-    localparam int DEPTH=16384,
+    parameter int WIDTH=16,
+    parameter int DEPTH=16384,
     localparam int ADDRW=$clog2(DEPTH)
   )(
     input clk

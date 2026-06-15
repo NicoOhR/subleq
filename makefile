@@ -12,8 +12,8 @@ IFACES  := $(wildcard $(RTL_DIR)/*_bus.sv)
 all: $(TARGETS)
 
 $(OUT_DIR)/%.out: $(SIM_DIR)/tb_%.sv $(RTL_DIR)/%.sv $(IFACES) | $(OUT_DIR)
-	iverilog -g2012 -o $@ $^
-	vvp $@
+	verilator --binary --timing --trace --top-module tb_$* -Mdir $(OUT_DIR)/$*_obj -o $(abspath $@) $^
+	$@
 
 $(OUT_DIR):
 	mkdir -p $@

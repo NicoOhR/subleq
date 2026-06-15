@@ -1,9 +1,7 @@
 module alu (
-  input logic signed[7:0] a_i,  b_i,
-  output logic signed[7:0] b_o,
-  output logic[1:0] s_o
+  alu_bus.ALU bus
 );
-  assign b_o = a_i - b_i;
-  assign s_o[1] = (a_i[7] ^ b_i[7]) & (a_i[7] ^ b_o[7]); //overflow
-  assign s_o[0] = b_o[7] | s_o[1]; // branch
+  assign bus.b_o = bus.a_i - bus.b_i;
+  assign bus.s_o[1] = (bus.a_i[7] ^ bus.b_i[7]) & (bus.a_i[7] ^ bus.b_o[7]); //overflow
+  assign bus.s_o[0] = bus.b_o[7] | bus.s_o[1]; // branch
 endmodule
