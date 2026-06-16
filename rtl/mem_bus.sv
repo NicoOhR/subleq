@@ -10,9 +10,10 @@ interface mem_bus
     logic [ADDRW-1:0] addr;
     logic [WIDTH-1:0] data_in;
     logic [WIDTH-1:0] data_out;
+    logic cs, sb, slp, pwr;
 
-    modport FSM (output we, addr, data_in,
+    modport FSM (output we, cs, sb, slp, pwr, addr, data_in,
                  input data_out,clk);
-    modport MEM (input we, addr, data_in,
+    modport MEM (input we, cs, sb, slp, pwr, addr, data_in,
                  output data_out,clk);
 endinterface

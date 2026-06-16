@@ -1,5 +1,5 @@
 interface alu_bus;
-  logic signed[7:0] a_i, b_i, b_o;
+  logic signed[15:0] a_i, b_i, b_o;
   logic[1:0] s_o;
  
   modport ALU (
