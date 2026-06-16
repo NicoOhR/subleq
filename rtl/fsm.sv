@@ -7,13 +7,15 @@ module fsm (
   typedef enum logic [7:0]
     {
       RESET,
+      WAIT,
       FETCH_A,
       FETCH_B,
       FETCH_C,
+      WRITE,
       BRANCH
     } state_t;
 
-  assign state = state_t'(8'b0);
+  state_t state;
 
   logic [15:0] tmp_a, tmp_b, tmp_c, pc;
   assign alu_b.a_i = tmp_a;
@@ -26,42 +28,48 @@ module fsm (
       RESET: begin
         pc <= 8'b0;
         mem_b.addr <= pc;
+        mem_b.cs <= 1;
+        mem_b.slp <= 0;
+        mem_b.pwr <= 1;
+        mem_b.sb <= 0;
+        mem_b.we <= 4'b0;
+        state <= WAIT;
+    end
+      WAIT: begin
         state <= FETCH_A;
+
+        mem_b.addr <= pc + 1;
     end
       FETCH_A: begin
         tmp_a <= mem_b.data_out;
 
-        pc <= pc + 1;
-        mem_b.addr <= pc;
+        mem_b.addr <= pc + 2;
         state <= FETCH_B;
     end
       FETCH_B: begin
         tmp_b <= mem_b.data_out;
-
-        pc <= pc + 1;
-        mem_b.addr <= pc;
         state <= FETCH_C;
     end
       FETCH_C: begin
         tmp_c <= mem_b.data_out;
-
-        pc <= pc + 1;
-        mem_b.addr <= pc;
+        state <= WRITE;
+    end
+      WRITE: begin
+        mem_b.addr <= pc + 1;
+        mem_b.data_in <= alu_b.b_o;
+        mem_b.we <= 4'b1111;
         state <= BRANCH;
     end
       BRANCH: begin
-        //write back the result from the ALU
-        mem_b.addr <= pc - 2;
-        mem_b.data_in <= alu_b.b_o;
-        mem_b.we <= 4'b1111;
-
+        mem_b.we <= 5'b0;
         if(alu_b.s_o[0]) begin
+          mem_b.addr <= tmp_c;
           pc <= tmp_c;
         end else begin
-          pc <= pc + 1;
+          mem_b.addr <= pc + 3;
+          pc <= pc + 3;
         end
-
-        state <= FETCH_A;
+        state <= WAIT;
     end
       default: begin
     end
