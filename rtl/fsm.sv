@@ -12,7 +12,8 @@ module fsm (
       FETCH_B,
       FETCH_C,
       WRITE,
-      BRANCH
+      BRANCH,
+      HALT
     } state_t;
 
   state_t state;
@@ -25,6 +26,9 @@ module fsm (
   // RAM read go through.
   always_ff @(posedge clk) begin : fsm
     case(state)
+      HALT: begin
+        state <= HALT;
+      end
       RESET: begin
         pc <= 8'b0;
         mem_b.addr <= pc;
@@ -36,13 +40,11 @@ module fsm (
         state <= WAIT;
     end
       WAIT: begin
-        state <= FETCH_A;
-
         mem_b.addr <= pc + 1;
+        state <= FETCH_A;
     end
       FETCH_A: begin
         tmp_a <= mem_b.data_out;
-
         mem_b.addr <= pc + 2;
         state <= FETCH_B;
     end
@@ -62,14 +64,18 @@ module fsm (
     end
       BRANCH: begin
         mem_b.we <= 5'b0;
-        if(alu_b.s_o[0]) begin
-          mem_b.addr <= tmp_c;
-          pc <= tmp_c;
+        mem_b.addr <= tmp_c;
+        if ((pc + 2) == tmp_c) begin
+          state <= HALT;
         end else begin
-          mem_b.addr <= pc + 3;
-          pc <= pc + 3;
-        end
-        state <= WAIT;
+          if(alu_b.s_o[0]) begin
+            pc <= tmp_c;
+          end else begin
+            mem_b.addr <= pc + 3;
+            pc <= pc + 3;
+          end
+          state <= WAIT;
+      end
     end
       default: begin
     end
