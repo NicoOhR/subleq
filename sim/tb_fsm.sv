@@ -18,19 +18,21 @@ module tb_fsm;
   end
 
   initial begin
-    //1 2 2, a - b = -1 -> branch in place -> HALT
-    mem.mem[0] = 16'd1;
-    mem.mem[1] = 16'd2;
-    mem.mem[2] = 16'd2;
-
-    //mem.mem[3] = 16'd2;
-    //mem.mem[4] = 16'd5;
-    //mem.mem[5] = 16'd0;
+    // SUBLEQ at PC=0: A_addr=3, B_addr=4, C=2
+    // val_b - val_a = 3 - 5 = -2  =>  write mem[4] = -2 (0xFFFE)
+    // C=2 = pc+2 => halt condition fires
+    mem.mem[0] = 16'd3;   // A_addr
+    mem.mem[1] = 16'd4;   // B_addr
+    mem.mem[2] = 16'd2;   // C (= pc+2 → HALT)
+    mem.mem[3] = 16'd5;   // mem[A] = val_a
+    mem.mem[4] = 16'd3;   // mem[B] = val_b (expect 0xFFFE after write)
   end
 
   initial begin
     $dumpfile("out/fsm.vcd");
     $dumpvars(0, tb_fsm);
-    #200 $finish;
+    #200;
+    $display("mem[4] = 0x%04h (expect 0xFFFE)", mem.mem[4]);
+    $finish;
   end
 endmodule
